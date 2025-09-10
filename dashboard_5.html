@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIMikro | Dashboard Interaktif Mikroplastik Indonesia</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .nav-link.active {
+            background-color: #ecfdf5; /* emerald-50 */
+            color: #059669; /* emerald-600 */
+            font-weight: 600;
+        }
+        .nav-link.active svg { stroke: #059669; }
+        .exposure-card.active {
+            border-color: #10b981; /* emerald-500 */
+            box-shadow: 0 0 0 2px #a7f3d0; /* emerald-200 */
+        }
+        .quiz-option {
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        .quiz-option.correct {
+            background-color: #d1fae5; /* green-100 */
+            border-color: #10b981; /* green-500 */
+        }
+        .quiz-option.wrong {
+            background-color: #fee2e2; /* red-100 */
+            border-color: #ef4444; /* red-500 */
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+    <div class="relative min-h-screen md:flex">
+        <!-- Mobile Header -->
+        <div class="md:hidden flex justify-between items-center bg-white p-4 shadow-md sticky top-0 z-20">
+            <h1 class="text-xl font-bold text-teal-700">SIMikro</h1>
+            <button id="mobile-menu-button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            </button>
+        </div>
+
+        <!-- Sidebar Navigation -->
+        <aside id="sidebar" class="bg-white text-slate-600 w-64 space-y-6 px-2 py-4 absolute inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition duration-200 ease-in-out shadow-lg md:shadow-none z-30 md:flex md:flex-col">
+            <div class="px-4">
+                <h1 class="text-2xl font-bold text-teal-700 hidden md:block">SIMikro</h1>
+            </div>
+            <nav class="flex-1 px-2 space-y-2">
+                <a href="#" onclick="showPage('tentang-simikro')" class="nav-link active flex items-center px-4 py-2.5 text-sm rounded-lg">Tentang SIMikro</a>
+                <a href="#" onclick="showPage('peta')" class="nav-link flex items-center px-4 py-2.5 text-sm rounded-lg">Peta Persebaran</a>
+                <a href="#" onclick="showPage('jalur-paparan')" class="nav-link flex items-center px-4 py-2.5 text-sm rounded-lg">Jalur Paparan</a>
+                <a href="#" onclick="showPage('forecasting')" class="nav-link flex items-center px-4 py-2.5 text-sm rounded-lg">Forecasting</a>
+                <a href="#" onclick="showPage('riset')" class="nav-link flex items-center px-4 py-2.5 text-sm rounded-lg">Riset</a>
+                <a href="#" onclick="showPage('solusi')" class="nav-link flex items-center px-4 py-2.5 text-sm rounded-lg">Aksi & Kalkulator</a>
+                <a href="#" onclick="showPage('kuis')" class="nav-link flex items-center px-4 py-2.5 text-sm rounded-lg">Kuis Edukasi</a>
+                <a href="#" onclick="showPage('glosarium')" class="nav-link flex items-center px-4 py-2.5 text-sm rounded-lg">Glosarium</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-4 md:p-8 overflow-y-auto">
+            <div id="tentang-simikro" class="content-page"></div>
+            <div id="peta" class="content-page hidden"></div>
+            <div id="jalur-paparan" class="content-page hidden"></div>
+            <div id="forecasting" class="content-page hidden"></div>
+            <div id="riset" class="content-page hidden"></div>
+            <div id="solusi" class="content-page hidden"></div>
+            <div id="kuis" class="content-page hidden"></div>
+            <div id="glosarium" class="content-page hidden"></div>
+        </main>
+    </div>
+
+    <script>
+        const pages = {
+            'tentang-simikro': `
+                <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg border border-slate-200">
+                    <h2 class="text-2xl md:text-3xl font-bold text-slate-800 mb-6 text-center">SIMikro (Sistem Informasi Mikroplastik)</h2>
+                    <div class="grid md:grid-cols-5 gap-8 items-start">
+                        <div class="md:col-span-3 text-sm text-slate-600 leading-relaxed">
+                            <p class="mb-4"><strong>Judul Infografis:</strong> Mikroplastik Musuh Tidak Kasat Mata Bagi Generasi Sehat</p>
+                            <p><strong>Tema:</strong> Integrasi Gaya Hidup dan Teknologi untuk Menuju Masyarakat Sehat.</p>
+                            <p><strong>Sub-Tema:</strong> Kesehatan Masyarakat</p>
+                            <p>SIMikro adalah dashboard interaktif di Indonesia yang menyediakan informasi terkait mikroplastik. Dashboard ini bertujuan meningkatkan kesadaran publik mengenai urgensi bahaya mikroplastik melalui visualisasi data yang komprehensif dan mudah dipahami, menyajikan hasil analisis statistik, peta persebaran, riset terbaru, serta dampak kesehatan, yang semuanya berfokus pada data relevan di Indonesia.</p>
+                        </div>
+                        <div class="md:col-span-2 space-y-4">
+                             <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                                 <h3 class="font-bold text-center text-slate-700 mb-4">Tim Penyusun</h3>
+                                 <div class="text-center space-y-2 text-sm">
+                                     <p class="font-semibold">Agatha Kristania Prineysa</p>
+                                     <p class="font-semibold">Yudit Ginsa Kurnia Putri</p>
+                                     <p class="font-semibold">Rizqi Adika Permana</p>
+                                     <hr class="w-2/3 my-2 border-slate-300 mx-auto">
+                                     <p class="text-sm font-semibold text-teal-700">Universitas Diponegoro</p>
+                                 </div>
+                             </div>
+                             <img src="https://placehold.co/400x250/e2e8f0/334155?text=Preview+Infografis" alt="Preview Infografis" class="w-full rounded-md border-2 border-slate-300">
+                        </div>
+                    </div>
+                </div>`,
+            'peta': `
+                <h2 class="text-2xl md:text-3xl font-bold text-slate-800 mb-2">Peta Risiko Mikroplastik di Indonesia</h2>
+                <p class="text-slate-500 mb-6 text-sm md:text-base">Peta persebaran ini mengkategorikan setiap provinsi di Indonesia ke dalam tiga klaster risiko: rendah, sedang, dan tinggi. Pengklasteran ini didasarkan pada analisis multivariat yang kompleks dari enam indikator kunci, memberikan pandangan komprehensif tentang kerentanan wilayah terhadap kontaminasi mikroplastik.</p>
+                <div class="bg-white p-4 md:p-6 rounded-xl shadow-lg border border-slate-200">
+                    <div class="flex flex-col lg:flex-row gap-6">
+                        <div class="w-full lg:w-2/3">
+                             <img src="https://placehold.co/800x600/e2e8f0/334155?text=Peta+Klaster+Indonesia" alt="Peta Klaster Risiko Mikroplastik" class="w-full h-auto rounded-lg bg-slate-100">
+                        </div>
+                        <div class="w-full lg:w-1/3">
+                            <h3 class="font-semibold text-lg mb-4">Legenda & Metodologi</h3>
+                            <div class="space-y-3 mb-6">
+                                <div class="flex items-center"><div class="w-5 h-5 rounded-full bg-red-500 mr-3 shrink-0"></div><span class="text-sm">Risiko Tinggi</span></div>
+                                <div class="flex items-center"><div class="w-5 h-5 rounded-full bg-orange-500 mr-3 shrink-0"></div><span class="text-sm">Risiko Sedang</span></div>
+                                <div class="flex items-center"><div class="w-5 h-5 rounded-full bg-yellow-400 mr-3 shrink-0"></div><span class="text-sm">Risiko Rendah</span></div>
+                            </div>
+                            <h4 class="font-semibold text-md mb-2">Variabel Data Kunci</h4>
+                             <ul class="list-disc list-inside text-xs text-slate-600 space-y-1">
+                                <li>Indeks Pembangunan Manusia (BPS)</li>
+                                <li>Tingkat Pencemaran Lingkungan (BPS)</li>
+                                <li>Komposisi & Sumber Sampah (SIPSN KLHK)</li>
+                                <li>Indeks Kinerja Pengelolaan Sampah (SIPSN KLHK)</li>
+                                <li>Pengeluaran per Kapita untuk Makanan Jadi (BPS)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>`,
+            'jalur-paparan': `
+                <h2 class="text-2xl md:text-3xl font-bold text-slate-800 mb-2">Jalur Paparan Mikroplastik</h2>
+                <p class="text-slate-500 mb-6 text-sm md:text-base">Visualisasi bagaimana mikroplastik dari berbagai sumber masuk ke dalam tubuh manusia.</p>
+                <div class="bg-white p-4 md:p-6 rounded-xl shadow-lg border border-slate-200">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 text-center">
+                        <div id="exp-ingesti" class="exposure-card border-2 border-transparent rounded-lg p-4 cursor-pointer hover:bg-slate-50 transition-colors">
+                            <svg class="w-12 h-12 mx-auto text-teal-600 mb-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.2 12.3c.53 1.2.8 2.5.8 3.8 0 4.4-3.6 8-8 8s-8-3.6-8-8 3.6-8 8-8c1.3 0 2.6.33 3.8.87"/><path d="M16 8c0 2.2-1.8 4-4 4s-4-1.8-4-4 1.8-4 4-4 4 1.8 4 4Z"/><path d="M15.5 6.5c1.33 1.33 2 2.83 2 4.5 0 2.5-2 4.5-4.5 4.5s-4.5-2-4.5-4.5c0-1.67.67-3.17 2-4.5"/><path d="M2 11h2"/><path d="M20 11h2"/><path d="m5 4-.8-.8"/><path d="m19.8 4-.8.8"/></svg>
+                            <h3 class="font-semibold">Ingesti (Tertelan)</h3>
+                        </div>
+                        <div id="exp-inhalasi" class="exposure-card border-2 border-transparent rounded-lg p-4 cursor-pointer hover:bg-slate-50 transition-colors">
+                             <svg class="w-12 h-12 mx-auto text-teal-600 mb-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2"/><path d="M9.6 4.6A2 2 0 1 1 11 8H2"/><path d="M12.6 19.4A2 2 0 1 0 14 16H2"/></svg>
+                            <h3 class="font-semibold">Inhalasi (Terhirup)</h3>
+                        </div>
+                        <div id="exp-dermal" class="exposure-card border-2 border-transparent rounded-lg p-4 cursor-pointer hover:bg-slate-50 transition-colors">
+                           <svg class="w-12 h-12 mx-auto text-teal-600 mb-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a7 7 0 0 0 7-7h-2a5 5 0 0 1-5 5v2Z"/><path d="M12 4a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h2a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3v0Z"/></svg>
+                            <h3 class="font-semibold">Dermal (Kontak)</h3>
+                        </div>
+                    </div>
+                    <div id="exposure-info" class="p-4 bg-slate-50 rounded-lg min-h-[150px] flex items-center justify-center">
+                        <p class="text-slate-500 text-center">Pilih salah satu jalur paparan di atas untuk melihat detail.</p>
+                    </div>
+                </div>`,
+            'forecasting': `
+                <h2 class="text-2xl md:text-3xl font-bold text-slate-800 mb-2">Proyeksi Timbulan Sampah Plastik</h2>
+                <p class="text-slate-500 mb-6 text-sm md:text-base">Prediksi jumlah sampah plastik nasional untuk 5 tahun ke depan.</p>
+                <div class="bg-white p-4 md:p-6 rounded-xl shadow-lg border border-slate-200">
+                    <div class="h-80 md:h-96"><canvas id="forecastingChart"></canvas></div>
+                </div>`,
+            'riset': `
+                <h2 class="text-2xl md:text-3xl font-bold text-slate-800 mb-2">Riset dan Berita Terkini</h2>
+                <p class="text-slate-500 mb-6 text-sm md:text-base">Kumpulan temuan ilmiah dan artikel pilihan seputar mikroplastik.</p>
+                <div class="bg-white p-4 md:p-6 rounded-xl shadow-lg border border-slate-200">
+                     <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left">
+                           <thead class="text-xs text-slate-700 uppercase bg-slate-50"><tr><th class="px-6 py-3">Judul</th><th class="px-6 py-3">Sumber</th><th class="px-6 py-3">Temuan Utama</th></tr></thead>
+                           <tbody>
+                                <tr class="border-b"><td class="px-6 py-4 font-semibold">Microplastics in human plaques...</td><td class="px-6 py-4">NEJM (2024)</td><td class="px-6 py-4">Risiko serangan jantung 4.5x lebih tinggi.</td></tr>
+                                <tr><td class="px-6 py-4 font-semibold">Human Consumption of Microplastics</td><td class="px-6 py-4">WWF (2019)</td><td class="px-6 py-4">Konsumsi 5g/minggu (setara kartu kredit).</td></tr>
+                           </tbody>
+                        </table>
+                    </div>
+                </div>`,
+            'solusi': `
+                <h2 class="text-2xl md:text-3xl font-bold text-slate-800 mb-2">Aksi & Kalkulator Paparan</h2>
+                <p class="text-slate-500 mb-6 text-sm md:text-base">Cari tahu solusi praktis dan hitung estimasi tingkat paparan personal Anda.</p>
+                <div class="bg-white p-4 md:p-6 rounded-xl shadow-lg border border-slate-200">
+                    <h3 class="text-xl font-bold mb-4">Kalkulator Estimasi Paparan</h3>
+                    <div class="space-y-4 text-sm">
+                        <div>
+                            <label class="font-semibold">Konsumsi air minum kemasan per minggu?</label>
+                            <select id="calc-water" class="w-full mt-1 p-2 border rounded-md"><option value="1">Jarang (0-2 botol)</option><option value="2">Sedang (3-6 botol)</option><option value="3">Sering (>6 botol)</option></select>
+                        </div>
+                        <div>
+                            <label class="font-semibold">Konsumsi seafood per minggu?</label>
+                            <select id="calc-seafood" class="w-full mt-1 p-2 border rounded-md"><option value="1">Tidak Pernah</option><option value="2">Kadang (1-2 kali)</option><option value="3">Sering (>2 kali)</option></select>
+                        </div>
+                        <div>
+                            <label class="font-semibold">Penggunaan produk scrub wajah/tubuh?</label>
+                            <select id="calc-scrub" class="w-full mt-1 p-2 border rounded-md"><option value="1">Tidak Pernah</option><option value="2">Kadang</option><option value="3">Sering</option></select>
+                        </div>
+                        <button id="calculate-risk" class="w-full bg-teal-600 text-white font-bold py-2 rounded-lg hover:bg-teal-700">Hitung Risiko</button>
+                    </div>
+                    <div id="risk-result" class="mt-4 text-center hidden p-4 rounded-lg"></div>
+                </div>`,
+            'kuis': `
+                <h2 class="text-2xl md:text-3xl font-bold text-slate-800 mb-2">Kuis Cerdas SIMikro</h2>
+                <p class="text-slate-500 mb-6 text-sm md:text-base">Uji pengetahuanmu dengan menjawab 3 pertanyaan acak!</p>
+                <div class="bg-white p-4 md:p-6 rounded-xl shadow-lg border border-slate-200">
+                     <div id="quiz-container" class="max-w-xl mx-auto text-center"></div>
+                </div>`,
+            'glosarium': `
+                <h2 class="text-2xl md:text-3xl font-bold text-slate-800 mb-2">Glosarium</h2>
+                <p class="text-slate-500 mb-6 text-sm md:text-base">Penjelasan istilah-istilah kunci yang digunakan dalam dashboard.</p>
+                <div class="space-y-4">
+                    <div class="bg-white p-4 rounded-lg border"><strong>Mikroplastik:</strong> Partikel plastik berukuran kurang dari 5 milimeter.</div>
+                    <div class="bg-white p-4 rounded-lg border"><strong>Ensemble Clustering:</strong> Teknik statistik yang menggabungkan beberapa hasil algoritma klasterisasi untuk akurasi yang lebih baik.</div>
+                    <div class="bg-white p-4 rounded-lg border"><strong>Exponential Smoothing:</strong> Metode peramalan (forecasting) untuk data time series yang memberi bobot lebih pada data baru.</div>
+                </div>`
+        };
+
+        function renderPage(pageId) {
+            const container = document.getElementById(pageId);
+            if (container) container.innerHTML = pages[pageId];
+        }
+        
+        // --- GLOBAL STATE ---
+        let forecastingChartInstance = null;
+
+        // --- NAVIGATION LOGIC ---
+        const navLinks = document.querySelectorAll('.nav-link');
+        const sidebar = document.getElementById('sidebar');
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+
+        function showPage(pageId) {
+            Object.keys(pages).forEach(id => document.getElementById(id).classList.add('hidden'));
+            document.getElementById(pageId).classList.remove('hidden');
+            
+            navLinks.forEach(link => {
+                link.classList.toggle('active', link.getAttribute('onclick').includes(pageId));
+            });
+
+            if (window.innerWidth < 768) {
+                sidebar.classList.add('-translate-x-full');
+            }
+            
+            if(pageId === 'forecasting') initForecastingChart();
+            if(pageId === 'jalur-paparan') initExposure();
+            if(pageId === 'solusi') initCalculator();
+            if(pageId === 'kuis') initQuiz();
+        }
+
+        mobileMenuButton.addEventListener('click', () => {
+            sidebar.classList.toggle('-translate-x-full');
+        });
+
+        // --- PAGE SPECIFIC INITIALIZATIONS ---
+        function initForecastingChart() {
+            const ctx = document.getElementById('forecastingChart')?.getContext('2d');
+            if(!ctx) return;
+
+            if (forecastingChartInstance) {
+                forecastingChartInstance.destroy();
+            }
+
+            forecastingChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['2024', '2025', '2026', '2027', '2028'],
+                    datasets: [{
+                        label: 'Prediksi Timbulan Sampah Plastik (Juta Ton)',
+                        data: [9.2, 9.5, 9.8, 10.1, 10.5],
+                        fill: true,
+                        backgroundColor: 'rgba(13, 148, 136, 0.1)',
+                        borderColor: 'rgba(13, 148, 136, 1)',
+                        tension: 0.2
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        }
+        
+        function initExposure() {
+            const exposureData = {
+                ingesti: { title: "Via Makanan & Minuman", text: "Mikroplastik masuk saat kita mengonsumsi seafood, garam laut, madu, dan air minum dalam kemasan. Partikel ini dapat terakumulasi di organ pencernaan." },
+                inhalasi: { title: "Via Udara", text: "Serat mikro dari pakaian sintetis, debu ban, dan polusi industri dapat terhirup dan mengendap di paru-paru, memicu iritasi dan peradangan." },
+                dermal: { title: "Via Kontak Kulit", text: "Beberapa produk kosmetik dan perawatan pribadi mengandung microbeads (plastik kecil) yang dapat berkontak dengan kulit. Penyerapan melalui kulit masih dalam penelitian intensif." }
+            };
+            document.querySelectorAll('.exposure-card').forEach(card => {
+                card.addEventListener('click', (e) => {
+                    const type = card.id.split('-')[1];
+                    document.querySelectorAll('.exposure-card').forEach(c => c.classList.remove('active'));
+                    card.classList.add('active');
+                    document.getElementById('exposure-info').innerHTML = `<h4 class="font-bold text-lg mb-2">${exposureData[type].title}</h4><p class="text-sm text-slate-600">${exposureData[type].text}</p>`;
+                });
+            });
+        }
+        
+        function initCalculator() {
+            const calculateBtn = document.getElementById('calculate-risk');
+            if(!calculateBtn) return;
+            calculateBtn.addEventListener('click', () => {
+                const water = parseInt(document.getElementById('calc-water').value);
+                const seafood = parseInt(document.getElementById('calc-seafood').value);
+                const scrub = parseInt(document.getElementById('calc-scrub').value);
+                const score = water + seafood + scrub;
+                const resultDiv = document.getElementById('risk-result');
+                let result = {};
+
+                if (score <= 4) result = { text: 'Rendah', color: 'bg-green-100', textColor: 'text-green-800' };
+                else if (score <= 7) result = { text: 'Sedang', color: 'bg-yellow-100', textColor: 'text-yellow-800' };
+                else result = { text: 'Tinggi', color: 'bg-red-100', textColor: 'text-red-800' };
+                
+                resultDiv.className = `mt-4 text-center p-4 rounded-lg ${result.color} ${result.textColor}`;
+                resultDiv.innerHTML = `<p class="font-semibold">Estimasi Tingkat Paparan Anda: <span class="font-bold text-lg">${result.text}</span></p><p class="text-xs mt-1">Ini adalah estimasi untuk meningkatkan kesadaran, bukan diagnosis medis.</p>`;
+                resultDiv.classList.remove('hidden');
+            });
+        }
+
+        function initQuiz() {
+            const quizContainer = document.getElementById('quiz-container');
+            if(!quizContainer) return;
+            
+            const quizBank = [
+                { q: "Risiko serangan jantung pada orang dengan mikroplastik di arteri meningkat...", options: ["2x lipat", "4.5x lipat", "1.5x lipat"], answer: "4.5x lipat" },
+                { q: "Prediksi timbulan sampah plastik 2028 adalah...", options: ["Sekitar 9 juta ton", "Lebih dari 10 juta ton", "Kurang dari 8 juta ton"], answer: "Lebih dari 10 juta ton" },
+                { q: "Yang BUKAN merupakan solusi pencegahan di hulu?", options: ["Memilah sampah", "Membawa tas belanja", "Memilih pakaian serat alami"], answer: "Memilah sampah" },
+                { q: "Metode klasterisasi pada peta adalah...", options: ["Regresi Linear", "Ensemble Clustering", "Analisis Korelasi"], answer: "Ensemble Clustering" },
+                { q: "Konsumsi plastik per minggu setara...", options: ["Sebutir beras", "Satu kartu kredit", "Selembar kertas"], answer: "Satu kartu kredit" },
+                { q: "Aksi penanganan sampah di hilir contohnya...", options: ["Memakai botol minum", "Dukung gerakan pungut sampah", "Belanja tanpa plastik"], answer: "Dukung gerakan pungut sampah" },
+                { q: "Kepanjangan dari MAPE adalah...", options: ["Mean Absolute Percentage Error", "Model Akurasi Persentase Error", "Method of Absolute Prediction Error"], answer: "Mean Absolute Percentage Error" },
+                { q: "Jumlah provinsi dengan klaster risiko rendah adalah...", options: ["1 Provinsi", "5 Provinsi", "10 Provinsi"], answer: "1 Provinsi" },
+                { q: "Memilih pakaian katun mengurangi cemaran...", options: ["Mikroplastik dari botol", "Serat mikroplastik cucian", "Mikroplastik dari ban"], answer: "Serat mikroplastik cucian" },
+                { q: "Metode peramalan pada dashboard ini adalah...", options: ["ARIMA", "Exponential Smoothing", "Regresi Logistik"], answer: "Exponential Smoothing" }
+            ];
+            
+            let currentQuestions = [];
+            let currentQuestionIndex = 0;
+            let score = 0;
+
+            function shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+            }
+
+            function displayQuestion() {
+                const questionData = currentQuestions[currentQuestionIndex];
+                let optionsHTML = '';
+                questionData.options.forEach(option => {
+                    optionsHTML += `<button class="quiz-option p-3 bg-slate-100 rounded-lg border border-slate-300 hover:bg-slate-200">${option}</button>`;
+                });
+
+                quizContainer.innerHTML = `
+                    <p class="text-sm text-slate-500">Soal ${currentQuestionIndex + 1} dari 3</p>
+                    <div class="my-4 p-6 bg-slate-50 rounded-lg">
+                        <p class="text-lg font-semibold">${questionData.q}</p>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">${optionsHTML}</div>
+                    <p id="quiz-feedback" class="mt-4 h-6 text-sm font-semibold"></p>
+                `;
+
+                document.querySelectorAll('.quiz-option').forEach(button => {
+                    button.addEventListener('click', (e) => selectAnswer(e.target, questionData.answer));
+                });
+            }
+
+            function selectAnswer(button, correctAnswer) {
+                 document.querySelectorAll('.quiz-option').forEach(btn => btn.disabled = true);
+                 const feedbackEl = document.getElementById('quiz-feedback');
+                 if (button.textContent === correctAnswer) {
+                     score++;
+                     button.classList.add('correct');
+                     feedbackEl.textContent = "Benar!";
+                     feedbackEl.className = "mt-4 h-6 text-sm font-semibold text-green-600";
+                 } else {
+                     button.classList.add('wrong');
+                     feedbackEl.textContent = `Jawaban benar: ${correctAnswer}`;
+                     feedbackEl.className = "mt-4 h-6 text-sm font-semibold text-red-600";
+                 }
+
+                 setTimeout(() => {
+                     currentQuestionIndex++;
+                     if (currentQuestionIndex < currentQuestions.length) {
+                         displayQuestion();
+                     } else {
+                         showFinalScore();
+                     }
+                 }, 1500);
+            }
+
+            function showFinalScore() {
+                quizContainer.innerHTML = `
+                    <h3 class="text-xl font-bold mb-4">Kuis Selesai!</h3>
+                    <p class="mb-6 text-slate-600 text-lg">Skor Akhir Anda: <span class="font-bold text-teal-600 text-2xl">${score}</span> dari 3 soal</p>
+                    <button id="restart-quiz-btn" class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-6 rounded-lg transition-colors">Coba Lagi</button>
+                `;
+                document.getElementById('restart-quiz-btn').addEventListener('click', startQuiz);
+            }
+
+            function startQuiz() {
+                shuffleArray(quizBank);
+                currentQuestions = quizBank.slice(0, 3);
+                currentQuestionIndex = 0;
+                score = 0;
+                displayQuestion();
+            }
+            
+            quizContainer.innerHTML = `
+                <h3 class="text-xl font-bold mb-4">Selamat Datang di Kuis Cerdas!</h3>
+                <p class="mb-6 text-slate-600">Jawab 3 pertanyaan acak seputar data mikroplastik untuk menguji pemahaman Anda.</p>
+                <button id="start-quiz-btn" class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-6 rounded-lg transition-colors">Mulai Kuis</button>
+            `;
+            document.getElementById('start-quiz-btn').addEventListener('click', startQuiz);
+        }
+
+        // Initialize first page load
+        document.addEventListener('DOMContentLoaded', () => {
+             Object.keys(pages).forEach(pageId => renderPage(pageId));
+             showPage('tentang-simikro');
+        });
+
+    </script>
+</body>
+</html>
+
